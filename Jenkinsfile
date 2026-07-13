@@ -2,17 +2,20 @@ pipeline {
     agent any
 
     environment {
-        GIT_REPO = 'https://github.com/DeekshithSN/sample-web-application.git'   
-}
+        GIT_REPO = 'https://github.com/DeekshithSN/sample-web-application.git'
+    }
 
     stages {
-        stage('List Git Branches') {
+        stage('List Branches') {
             steps {
-                script {
-                    sh """
-                        echo "Available branches in ${GIT_REPO}:"
-                        git ls-remote --heads ${GIT_REPO} | awk '{print \$2}' | sed 's#refs/heads/##'
-                    """
+                withCredentials([usernamePassword(
+                    credentialsId: 'github-creds',
+                    usernameVariable: 'GIT_USER',
+                    passwordVariable: 'GIT_TOKEN'
+                )]) {
+                    sh '''
+                        git ls-remote --heads https://${GIT_USER}:${GIT_TOKEN}@github.com/DeekshithSN/sample-web-application.git
+                    '''
                 }
             }
         }
